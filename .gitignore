@@ -1,0 +1,26 @@
+# Бинарники, сборки
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+
+# Папки для сборки и артефактов
+bin/
+build/
+dist/
+
+# Кэш Go
+/go.work
+/go.work.sum
+/go.sum.lock
+
+# IDE и редакторы
+.idea/
+.vscode/
+*.swp
+
+# Логи
+*.log
