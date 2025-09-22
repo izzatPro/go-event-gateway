@@ -10,30 +10,38 @@ import (
 
 func main() {
 	db.InitDB()
+
 	server := gin.Default()
-	server.GET("/events", getEvents) //get post put patch delete
+	server.GET("/events", getEvents)
 	server.POST("/events", createEvent)
-	server.Run(":8080") //localhost : 8080
+
+	server.Run(":8080")
 }
 
-func getEvents(context *gin.Context) {
-	events := models.GetAllEvents()
-	context.JSON(http.StatusOK, events)
-}
-
-func createEvent(context *gin.Context) {
-
-	var event models.Event
-	err := context.ShouldBindJSON(&event)
-
+func getEvents(c *gin.Context) {
+	events, err := models.GetAllEvents()
 	if err != nil {
-		context.JSON(http.StatusBadRequest, gin.H{"message": "Could not parse request data."})
+		c.JSON(http.StatusInternalServerError, gin.H{"message": "Could not fetch events. Try again later."})
 		return
 	}
-	event.ID = 1
+	c.JSON(http.StatusOK, events)
+}
+
+func createEvent(c *gin.Context) {
+	var event models.Event
+
+	if err := c.ShouldBindJSON(&event); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"message": "Could not parse request data."})
+		return
+	}
+
+	// сервер проставляет служебные поля
 	event.UserID = 1
 
-	event.Save()
+	if err := event.Save(); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"message": "Could not create event. Try again later."})
+		return
+	}
 
-	context.JSON(http.StatusCreated, gin.H{"message": "Event created ! ", "event": event})
+	c.JSON(http.StatusCreated, gin.H{"message": "Event created!", "event": event})
 }
