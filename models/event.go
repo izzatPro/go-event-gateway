@@ -22,12 +22,14 @@ func (e *Event) Save() error {
 	          VALUES (?, ?, ?, ?, ?)`
 
 	stmt, err := db.DB.Prepare(query)
+
 	if err != nil {
 		return err
 	}
 	defer stmt.Close()
 
 	result, err := stmt.Exec(e.Name, e.Description, e.Location, e.DateTime, e.UserID)
+
 	if err != nil {
 		return err
 	}
@@ -44,9 +46,11 @@ func (e *Event) Save() error {
 func GetAllEvents() ([]Event, error) {
 	query := `SELECT * FROM events`
 	rows, err := db.DB.Query(query)
+
 	if err != nil {
 		return nil, err
 	}
+
 	defer rows.Close()
 
 	var events []Event
@@ -69,6 +73,7 @@ func GetEventByID(id int64) (*Event, error) {
 	var event Event
 
 	err := row.Scan(&event.ID, &event.Name, &event.Description, &event.DateTime, &event.UserID)
+
 	if err != nil {
 		return nil, err
 	}
